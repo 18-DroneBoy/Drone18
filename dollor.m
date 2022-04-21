@@ -1,4 +1,5 @@
-Dol = input("원화입력: ");
+Won = input("원화입력: ");
+Dol = Won/1235;
 D_100 = fix(Dol/100);
 D__100 = mod(Dol,100);
 
