@@ -56,4 +56,15 @@ japan_change(4) = fix(rem(rem(rem(Japan,10000),5000),2000)/1000);
 
 japan_money = japan_change(1) + japan_change(2) + japan_change(3) + japan_change(4);
 
-fprintf('유로 지폐의 개수 : %d, 달러 지폐의 개수 %d, 엔화 지폐의 개수 %d', page_euro, page_dollor, japan_money)
+
+china_money = [50, 20, 10, 5, 1];
+
+China = Won/193.87;
+china_count = 0;
+
+for k=1:5
+            china_count = china_count + fix(China/china_money(k));
+            China = rem(China,china_money(k));
+end
+
+fprintf('유로 지폐의 개수 : %d, 달러 지폐의 개수 %d, 엔화 지폐의 개수 %d, 중국 지폐의 개수 %d', page_euro, page_dollor, japan_money, china_count)
