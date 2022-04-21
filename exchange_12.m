@@ -53,7 +53,6 @@ japan_change(1) = fix(Japan/10000);
 japan_change(2) = fix((rem(Japan,10000))/5000);
 japan_change(3) = fix(rem(rem(Japan,10000),5000)/2000);
 japan_change(4) = fix(rem(rem(rem(Japan,10000),5000),2000)/1000);
-
 japan_money = japan_change(1) + japan_change(2) + japan_change(3) + japan_change(4);
 
-fprintf('유로 지폐의 개수 : %d, 달러 지폐의 개수 %d, 엔화 지폐의 개수 %d', page_euro, page_dollor, japan_money)
+fprintf('유로 지폐의 개수 : %d, 달러 지폐의 개수 %d', page_euro, page_dollor)
