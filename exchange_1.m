@@ -1,49 +1,49 @@
 Won = input("원화입력: ");
-Euro = Won/1333;
-Euro_500 = fix(Euro/500);
-Euro__500 = mod(Euro,500);
+E = Won/1333;
+E_500 = fix(E/500);
+E__500 = mod(E,500);
 
-Euro_200 = fix(Euro__500/200);
-Euro__200 = mod(Euro__500,200);
+E_200 = fix(E__500/200);
+E__200 = mod(E__500,200);
 
-Euro_100 = fix(Euro__200/100);
-Euro__100 = mod(Euro__200,100);
+E_100 = fix(E__200/100);
+E__100 = mod(E__200,100);
 
-Euro_50 = fix(Euro__100/50);
-Euro__50 = mod(Euro__100,50);
+E_50 = fix(E__100/50);
+E__50 = mod(E__100,50);
 
-Euro_20 = fix(Euro__50/20);
-Euro__20 = mod(Euro__50,20);
+E_20 = fix(E__50/20);
+E__20 = mod(E__50,20);
 
-Euro_10 = fix(Euro__20/10);
-Euro__10 = mod(Euro__20,10);
+E_10 = fix(E__20/10);
+E__10 = mod(E__20,10);
 
-Euro_5 = fix(Euro__10/5);
+E_5 = fix(E__10/5);
 
-page_euro = Euro_500 + Euro_200 + Euro_100 + Euro_50 + Euro_20 + Euro_10 + Euro_5;
+page_euro = E_500 + E_200 + E_100 + E_50 + E_20 + E_10 + E_5;
 
-Dollor = Won/1235;
-Dollor_100 = fix(Dollor/100);
-Dollor__100 = mod(Dollor,100);
+Dol = Won/1235;
+D_100 = fix(Dol/100);
+D__100 = mod(Dol,100);
 
-Dollor_50 = fix(Dollor__100/50);
-Dollor__50 = mod(Dollor__100, 50);
+D_50 = fix(D__100/50);
+D__50 = mod(D__100, 50);
 
-Dollor_20 = fix(Dollor__50/20);
-Dollor__20 = mod(Dollor__50,20);
+D_20 = fix(D__50/20);
+D__20 = mod(D__50,20);
 
-Dollor_10 = fix(Dollor__20/10);
-Dollor__10 = mod(Dollor__20,10);
+D_10 = fix(D__20/10);
+D__10 = mod(D__20,10);
 
-Dollor_5 = fix(Dollor__10/5);
-Dollor__5 = mod(Dollor__10,5);
+D_5 = fix(D__10/5);
+D__5 = mod(D__10,5);
 
-Dollor_2 = fix(Dollor__5/2);
-Dollor__2 = mod(Dollor__5,2);
+D_2 = fix(D__5/2);
+D__2 = mod(D__5,2);
 
-Dollor_1 = fix(Dollor__2/1);
+D_1 = fix(D__2/1);
 
-page_dollor = Dollor_100 + Dollor_50 + Dollor_20 + Dollor_10 + Dollor_5 + Dollor_2 + Dollor_1;
+page_dollor = D_100 + D_50 + D_20 + D_10 + D_5 + D_2 + D_1;
 
 J_rate = 9.65;
 japan_change = [0 0 0 0];
@@ -56,4 +56,15 @@ japan_change(4) = fix(rem(rem(rem(Japan,10000),5000),2000)/1000);
 
 japan_money = japan_change(1) + japan_change(2) + japan_change(3) + japan_change(4);
 
-fprintf('유로 지폐의 개수 : %d, 달러 지폐의 개수 %d, 엔화 지폐의 개수 %d', page_euro, page_dollor, japan_money)
+
+china_money = [50, 20, 10, 5, 1];
+
+China = Won/193.87;
+china_count = 0;
+
+for k=1:5
+            china_count = china_count + fix(China/china_money(k));
+            China = rem(China,china_money(k));
+end
+
+fprintf('유로 지폐의 개수 : %d, 달러 지폐의 개수 %d, 엔화 지폐의 개수 %d, 중국 지폐의 개수 %d', page_euro, page_dollor, japan_money, china_count)
