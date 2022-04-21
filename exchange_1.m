@@ -45,4 +45,15 @@ D_1 = fix(D__2/1);
 
 page_dollor = D_100 + D_50 + D_20 + D_10 + D_5 + D_2 + D_1;
 
+J_rate = 9.65;
+japan_change = [0 0 0 0];
+
+Japan = Won/J_rate;
+japan_change(1) = fix(Japan/10000);
+japan_change(2) = fix((rem(Japan/10000))/5000);
+japan_change(3) = fix((rem(rem(Japan/10000))/5000)/2000);
+japan_change(4) = fix(((rem(rem(Japan/10000))/5000)/2000)/1000);
+
+japan_money = japan_change(1) + japan_change(2) + japan_change(3) + japan_change(4);
+
 fprintf('유로 지폐의 개수 : %d, 달러 지폐의 개수 %d', page_euro, page_dollor)
