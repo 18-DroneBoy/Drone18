@@ -4,10 +4,10 @@ detection = false;
 count = 0;
 
 %HSV 값 설정
-red_h_min1 = 0; red_h_max1 = 0.05; red_h_min2 = 0.95; red_h_max2 = 1; red_s_min = 0.6; red_s_max = 1;
-pur_h_min = 0.7; pur_h_max = 0.85; pur_s_min = 0.4; pur_s_max = 1;
-gre_h_min = 0.3; gre_h_max = 0.4; gre_s_min = 0.4; gre_s_max = 1;
 blu_h_min = 0.55; blu_h_max = 0.7; blu_s_min = 0.5; blu_s_max = 0.9;
+red_h_min1 = 0; red_h_max1 = 0.05; red_h_min2 = 0.95; red_h_max2 = 1; red_s_min = 0.8; red_s_max = 1;
+gre_h_min = 0.34; gre_h_max = 0.45; gre_s_min = 0.4; gre_s_max = 1;
+pur_h_min = 0.7; pur_h_max = 0.85; pur_s_min = 0.5; pur_s_max = 1;
 
 %% 객체 선언  
 drone = ryze(); %드론 객체 선언
@@ -47,24 +47,31 @@ for mission = 2:3
             end
         end
        
-        %hole 식별
-        if sum(circle,'all') > 10000 
+        %Hole 식별 시
+        if sum(circle,'all') > 10000
             disp('hole 탐색 완료!');
             count = 0;
             break;
 
-        %hole 미식별
+        %Hole 미식별 시
         else
-            %화면의 좌우, 상하를 비교
-            diff_lr = sum(imcrop(blue_screen,[0 0 480 720]),'all') - sum(imcrop(blue_screen,[480 0 960 720]),'all');
-            diff_ud = sum(imcrop(blue_screen,[0 0 960 360]),'all') - sum(imcrop(blue_screen,[0 360 960 720]),'all');
+            %화면의 좌우, 상하를 비교(imcrop함수를 이용하여 특정 영역 추출)
+            diff_lr = sum(imcrop(blue_screen,[0 0 480 720]),'all') - sum(imcrop(blue_screen,[480 0 480 720]),'all');
+            diff_ud = sum(imcrop(blue_screen,[0 0 960 360]),'all') - sum(imcrop(blue_screen,[0 360 960 360]),'all');
             
             if count == 7
                 moveforward(drone, 'distance', 0.4, 'speed', 0.5);
-                disp('Circle Detection : 기동 횟수 초과에 따른 직진');
+                disp('Circle Detection : 기동 횟수 초과에 따른 직진 및 초기화');
                 count = 0;
             
             else
+                %미션 3에서 원 탐색을 위하여 3도씩 회전하면서 탐색 시행
+                if mission == 3
+                    turn(drone, deg2rad(3));
+                    disp('3도 회전');
+                    count = count + 1;
+                end
+                    
                 %화면에 표시된 blue_screen의 좌우값 차이를 이용
                 if diff_lr > 30000
                     moveleft(drone,'distance',0.25,'speed',0.5);
@@ -88,12 +95,6 @@ for mission = 2:3
                     disp('아래쪽으로 0.2m 만큼 이동');
                     count = count + 1;
                 end
-                
-                if mission == 3
-                    turn(drone, deg2rad(3));
-                    disp('3도 회전');
-                    count = count + 1;
-                end 
             end
         end
     end
@@ -135,17 +136,17 @@ for mission = 2:3
         end
         
         if mission == 3
-            purple = (pur_h_min<h) & (h<pur_h_max) & (pur_s_min<s) & (s<=pur_s_max);
-            purple_detect_area = regionprops(purple, 'Centroid', 'Area');
-            purple_area = 0;
-            for j = 1:length(purple_detect_area)
-                if purple_area <= purple_detect_area(j).Area %가장 큰 영역 추출을 위하여 Area를 이용한 처리
-                    purple_area = purple_detect_area(j).Area;
-                    purple_center = purple_detect_area(j).Centroid;
+            red = (red_h_min<h) & (h<red_h_max) & (red_s_min<s) & (s<=red_s_max);
+            red_detect_area = regionprops(red, 'Centroid', 'Area');
+            red_area = 0;
+            for j = 1:length(red_detect_area)
+                if red_area <= red_detect_area(j).Area %가장 큰 영역 추출을 위하여 Area를 이용한 처리
+                    red_area = red_detect_area(j).Area;
+                    red_center = red_detect_area(j).Centroid;
                 end
             end
             
-            if purple_area ~= 0 && circle_area >= 70000
+            if red_area ~= 0 && circle_area >= 70000
                 disp('Circle Detection : 표식 탐색으로 진행');
                 break;
             end
@@ -194,34 +195,34 @@ for mission = 2:3
         v = hsv(:,:,3);
  
         if mission == 1 %원 통과 후 점 찾기(red)
-            red = ((red_h_min1<h) & (h<red_h_max1) | (red_h_min2<h) & (h<red_h_max2)) & (red_s_min<s) & (s<=red_s_max);
+            green = (gre_h_min<h) & (h<gre_h_max) & (gre_s_min<s) & (s<=gre_s_max);
              
-            if sum(red, 'all') ~= 0
-                if sum(red, 'all') > 2000
+            if sum(green, 'all') ~= 0
+                if sum(green, 'all') > 2000
                     disp('Marker Detection : 미션 1 표식 감지');
                     turn(drone, deg2rad(90));
                     moveforward(drone, 'distance', 1);
                     break;
                     
-                elseif 50 < sum(red, 'all') && sum(red, 'all') < 1000
+                elseif 50 < sum(green, 'all') && sum(green, 'all') < 1000
                     disp('Marker Detection : 미션 1 표식 까지 이동');
                     moveforward(drone, 'distance', 0.5);
                 end
             end
             
         elseif mission == 2 %원 통과 후 점 찾기(green)
-            green = (gre_h_min<h) & (h<gre_h_max) & (gre_s_min<s) & (s<=gre_s_max);
-            green_detect_area = regionprops(green, 'Centroid', 'Area');
+            purple = (pur_h_min<h) & (h<pur_h_max) & (pur_s_min<s) & (s<=pur_s_max);
+            purple_detect_area = regionprops(purple, 'Centroid', 'Area');
             purple_area = 0;
-            for j = 1:length(green_detect_area)
-                if purple_area <= green_detect_area(j).Area %가장 큰 영역 추출을 위하여 Area를 이용한 처리
-                    purple_area = green_detect_area(j).Area;
-                    purple_center = green_detect_area(j).Centroid;
+            for j = 1:length(purple_detect_area)
+                if purple_area <= purple_detect_area(j).Area %가장 큰 영역 추출을 위하여 Area를 이용한 처리
+                    purple_area = purple_detect_area(j).Area;
+                    purple_center = purple_detect_area(j).Centroid;
                 end
             end
-            if sum(green, 'all') ~= 0
+            if sum(purple, 'all') ~= 0
                 detection = true;
-                if sum(green, 'all') > 2200
+                if sum(purple, 'all') > 2200
                     disp('Marker Detection : 미션 2 표식 감지');
                     turn(drone, deg2rad(90));
                     moveforward(drone, 'distance', 1, 'speed', 1);
@@ -230,7 +231,7 @@ for mission = 2:3
                     moveback(drone, 'distance', 0.4, 'speed', 0.5);
                     break;
                     
-                elseif 50 < sum(green, 'all') && sum(green, 'all') < 1200
+                elseif 50 < sum(purple, 'all') && sum(purple, 'all') < 1200
                     if purple_center(1) < 280
                         moveleft(drone, 'distance', 0.22, 'speed', 0.5);
                         disp('Marker Detection : 좌측으로 이동');
@@ -250,7 +251,7 @@ for mission = 2:3
 
                     end
                         
-                elseif 1200 <= sum(green, 'all') && sum(green, 'all') <= 2200
+                elseif 1200 <= sum(purple, 'all') && sum(purple, 'all') <= 2200
                     moveforward(drone, 'distance', 0.5, 'speed', 1);  
                     disp('Marker Detection : 전진');
                     
@@ -258,37 +259,37 @@ for mission = 2:3
                     moveforward(drone, 'distance', 0.2, 'speed', 1);
                 end
                 
-            elseif sum(green, 'all') == 0 && detection == true
+            elseif sum(purple, 'all') == 0 && detection == true
                 moveback(drone, 'distance', 0.2, 'speed', 1);
                 detection = false;
               
             end
             
         elseif mission == 3  %원 통과 후 점 찾기(purple)
-            purple = (pur_h_min<h) & (h<pur_h_max) & (pur_s_min<s) & (s<=pur_s_max);
-            purple_detect_area = regionprops(purple, 'Centroid', 'Area');
-            purple_area = 0;
-            for j = 1:length(purple_detect_area)
-                if purple_area <= purple_detect_area(j).Area %가장 큰 영역 추출을 위하여 Area를 이용한 처리
-                    purple_area = purple_detect_area(j).Area;
-                    purple_center = purple_detect_area(j).Centroid;
+            red = ((red_h_min1<h) & (h<red_h_max1) | (red_h_min2<h) & (h<red_h_max2)) & (red_s_min<s) & (s<=red_s_max);
+            red_detect_area = regionprops(red, 'Centroid', 'Area');
+            red_area = 0;
+            for j = 1:length(red_detect_area)
+                if red_area <= red_detect_area(j).Area %가장 큰 영역 추출을 위하여 Area를 이용한 처리
+                    red_area = red_detect_area(j).Area;
+                    red_center = red_detect_area(j).Centroid;
                 end
             end
-            if sum(purple, 'all') ~= 0
-                if sum(purple, 'all') > 2200
+            if sum(red, 'all') ~= 0
+                if sum(red, 'all') > 2200
                     disp('미션 3 표식 감지');
                     land(drone);
                     disp('미션 종료');
                     break;
                  
-                elseif 50 < sum(purple, 'all') && sum(purple, 'all') < 1200
-                    if purple_center(1) < 280
+                elseif 50 < sum(red, 'all') && sum(red, 'all') < 1200
+                    if red_center(1) < 280
                         moveleft(drone, 'distance', 0.22, 'speed', 0.5);
                         disp('Marker Detection : 좌측으로 이동');
-                    elseif purple_center(1) > 680
+                    elseif red_center(1) > 680
                         moveright(drone, 'distance', 0.22, 'speed', 0.5);
                         disp('Marker Detection : 우측으로 이동');
-                    elseif purple_center(2) > 360
+                    elseif red_center(2) > 360
                         movedown(drone, 'distance', 0.22, 'speed', 0.5);
                         disp('Marker Detection : 아래로 이동');
                     else
@@ -297,7 +298,7 @@ for mission = 2:3
 
                     end
                         
-                elseif 1200 <= sum(purple, 'all') && sum(purple, 'all') <= 2200
+                elseif 1200 <= sum(red, 'all') && sum(red, 'all') <= 2200
                     moveforward(drone, 'distance', 0.5, 'speed', 1);  
                     disp('Marker Detection : 전진');
                 end
