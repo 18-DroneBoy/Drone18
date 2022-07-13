@@ -42,6 +42,36 @@ DJI Tello 미니드론을 이용하였다.
 4. 인식한 표식까지 전진한 후, 회전 임무를 수행한다. (2단계에서 2-3번을 반복진행)
 
 
+🎈 단계별 시행착오
+====
+* 1단게 통과 방식
+초기에 1단게 통과절차의 구상은 다음과 같았다.
+<pre>
+ %% 상하 구동 결정 함수
+    while 1
+        %이미지 처리(RGB->HSV)
+        frame = snapshot(cam);
+        hsv = rgb2hsv(frame);
+        h = hsv(:,:,1);
+        s = hsv(:,:,2);
+        v = hsv(:,:,3);
+        [height, ] = readHeight(drone); %드론 현재 높이 받아오기
+
+        if mission == 1 %미션 1 수행_상하 컨트롤
+            disp('미션 1 수행 중');
+            if abs(height-0.9) > 0.2 %절댓값으로 확인
+                if height < 0.9
+                    moveup(drone,'Distance',0.9-height)
+                    break;
+                else
+                    movedown(drone,'Distance',height-0.9)
+                    break;
+                end
+            end
+</pre>
+
+장애물이 측면으로 움직인다는 변수가 없고 드론이 정면을 봤을 때, 통과해야하는 구멍이 처음부터 중앙에 있다는 점과 장애물 밑단의 길이가 50cm라고 가정했
+높이에 대한 값만 받은 후 
 
 
 🎈 소스코드 설명
