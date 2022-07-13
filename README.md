@@ -42,9 +42,10 @@ DJI Tello 미니드론을 이용하였다.
 1. 기기의 객체 선언 및 takeoff 진행한다.
 2. 파란색 천막 인식 및 구멍을 이미지 처리한 후 드론 카메라에 표시되는 구멍의 위치에 따라 드론이 전진과 동시에 상하좌우로 제어한다.
 3. 구멍에 충분히 가까워졌다고 판단되면 구멍을 이용한 제어는 멈추고 이후의 표식을 인식한다. 
-4. 인식한 표식까지 전진한 후, 회전 임무를 수행한다. (2단계에서 2-3번을 반복진행)  
+4. 인식한 표식까지 전진한 후, 회전 임무를 수행한다. (2단계에서 2-3번을 반복진행)
 
 * 전체적인 알고리즘 진행과정  
+
 ![image](https://user-images.githubusercontent.com/102723228/178747877-fcfcfaeb-a0a3-43b5-b3a0-c08d92a91fa4.png)
 <img src="![image](https://user-images.githubusercontent.com/102723228/178747917-946ea54e-9268-43e1-8956-d269f9ecd91a.png)">
 
@@ -61,6 +62,35 @@ DJI Tello 미니드론을 이용하였다.
 ![image](https://user-images.githubusercontent.com/102723228/178749527-418580cb-87ab-4367-ac2f-3b6c52f00282.png)
 <img src="![image](https://user-images.githubusercontent.com/102723228/178749555-b5d74f89-2b4b-49e1-808f-16ffccc5cdf2.png)">  
 
+드론이 장애물과 평행하게 만들어 구멍통과 이후 표식을 인식하여 다음 임무를 수행하도록 한다.  
+
+6. Yaw 기동이 끝난 드론이 카메라 화면을 4분면으로 나누어 각 사분면에 들어오는 blue screen 픽셀 값을 이용하여 Drone을 제어  
+* 이론과정  
+
+![image](https://user-images.githubusercontent.com/102723228/178752299-95c6673c-a4d8-4993-a064-faa66b2b0d97.png)
+<img src="![image](https://user-images.githubusercontent.com/102723228/178752299-95c6673c-a4d8-4993-a064-faa66b2b0d97.png)">  
+
+
+* 화면을 사분면으로 나누고 각 사분면으로 들어오는 blue screen data를 이진화시켜 상하좌우 드론 방향을 제어  
+
+![image](https://user-images.githubusercontent.com/102723228/178752569-e03c3da7-fbe0-468b-aef8-47e6f4ff50bf.png)
+<img src="![image](https://user-images.githubusercontent.com/102723228/178752569-e03c3da7-fbe0-468b-aef8-47e6f4ff50bf.png)">  
+
+* 예시 1)  
+![image](https://user-images.githubusercontent.com/102723228/178753224-809d906d-38ec-4834-b136-0930d6bfd71a.png)
+<img src="![image](https://user-images.githubusercontent.com/102723228/178753239-3431cad4-e5a7-47f7-825a-d899c2c31099.png)">  
+
+* 예시 2)  
+![image](https://user-images.githubusercontent.com/102723228/178753293-a9a1bdec-31df-44f9-ab24-030d592a6ff8.png)
+<img src="![image](https://user-images.githubusercontent.com/102723228/178753324-fa542fef-55f9-4cdc-9c72-b490ec1013b2.png)">  
+
+* 예시 3)  
+![image](https://user-images.githubusercontent.com/102723228/178753513-2029dd37-45f8-4603-92b1-96d488978383.png)
+<img src="![image](https://user-images.githubusercontent.com/102723228/178753469-7f22d1a0-3af7-4e6c-9cb3-61d6edc20704.png)">  
+
+* 예시 4)  
+![image](https://user-images.githubusercontent.com/102723228/178753646-299c1a34-ee60-4b16-8d25-4cf71293b3db.png)
+<img src="![image](https://user-images.githubusercontent.com/102723228/178753662-102424d9-74a7-4bd7-8900-35ab8eaaf3c7.png)">  
 
 
 🎈 단계별 시행착오
