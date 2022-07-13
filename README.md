@@ -85,9 +85,12 @@ DJI Tello 미니드론을 이용하였다.
 1. 기기의 객체 선언 및 takeoff
 <pre>
 %% 변수 선언
+clc; clear;
+detection = false;
+%% 변수 선언
 count = 0;
-detection = [false false];
 
+%HSV 값 설정
 red_h_min1 = 0; red_h_max1 = 0.05; red_h_min2 = 0.95; red_h_max2 = 1; red_s_min = 0.6; red_s_max = 1;
 pur_h_min = 0.7; pur_h_max = 0.85; pur_s_min = 0.4; pur_s_max = 1;
 gre_h_min = 0.3; gre_h_max = 0.4; gre_s_min = 0.4; gre_s_max = 1;
@@ -95,7 +98,7 @@ blu_h_min = 0.55; blu_h_max = 0.7; blu_s_min = 0.5; blu_s_max = 0.9;
 
 %% 객체 선언  
 drone = ryze(); %드론 객체 선언
-cam = camera(drone);
+cam = camera(drone); %카메라 객체 선언
 
 %% Main 함수
 takeoff(drone);
