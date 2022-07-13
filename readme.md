@@ -11,6 +11,8 @@ Drone18
 코드를 구현하기 위한 공간을 마련하기 위해 필요한 장비(천막, 봉) 구매와 강의실을 대여하여 환경을 구축하였다. 주어진 작업환경에서 코딩 후 즉시 적용해가며 이상적인 값과 실제 적용한 값과의 오차를 줄여나갔다. 
 
 
+
+
 알고리즘 설명
 ====
 1. 기기의 객체 선언 및 takeoff 진행한다.
@@ -18,7 +20,14 @@ Drone18
 3. 구멍에 충분히 가까워졌다고 판단되면 구멍을 이용한 제어는 멈추고 이후의 표식을 인식한다. 
 4. 인식한 표식까지 전진한 후, 회전 임무를 수행한다. (2단계에서 2-3번을 반복진행)
 
-# 소스코드 설명
+
+
+소스코드 설명
+====
+
+소스코드는 앞서 설명한 알고리즘에 대해 순차적으로 작성하였다.
+더욱 상세한 설명은 각 코드별 주석에서 확인할 수 있다.
+----
 1. 기기의 객체 선언 및 takeoff
 <pre>
 <code>
@@ -180,9 +189,84 @@ for mission = 1:3
             disp(['미션 ',mission, '원2 통과 완료']);
             break;
         end
-        
-            
-       
     end
+</code>
+</pre>
+
+----
+3. 구멍에 충분히 가까워졌다고 판단되면 구멍을 이용한 제어는 멈추고 이후의 표식을 인식한다. 
+
+<pre>
+<code>
+ %% 표식 찾기 함수
+    while 1
+        %이미지 처리(RGB->HSV)
+        frame = snapshot(cam);
+        hsv = rgb2hsv(frame);
+        h = hsv(:,:,1);
+        s = hsv(:,:,2);
+        v = hsv(:,:,3);
+ 
+        if mission == 1 %원 통과 후 점 찾기(red)
+            red = ((red_h_min1<h) & (h<red_h_max1) | (red_h_min2<h) & (h<red_h_max2)) & (red_s_min<s) & (s<=red_s_max);
+            
+            imshow(red);
+            
+            
+            if sum(red, 'all') ~= 0
+                if sum(red, 'all') > 2000
+                    moveforward(drone, 'distance', 0.2);
+                    disp('미션 1 표식 감지');
+                    turn(drone, deg2rad(90));
+                    moveforward(drone, 'distance', 1);
+                    break;
+                    
+                elseif 50 < sum(red, 'all') && sum(red, 'all') < 2000
+                    disp('미션 1 표식 멀리 있음');
+                    moveforward(drone, 'distance', 0.5);
+                    
+                end
+            end
+            
+        elseif mission == 2 %원 통과 후 점 찾기(green)
+            green = (gre_h_min<h) & (h<gre_h_max) & (gre_s_min<s) & (s<=gre_s_max);
+            imshow(green);
+            if sum(green, 'all') ~= 0
+                if sum(green, 'all') > 2000
+                    moveforward(drone, 'distance', 0.3);
+                    disp('미션 2 표식 감지');
+                    turn(drone, deg2rad(90));
+                    moveforward(drone, 'distance', 1);
+                    break;
+                    
+                elseif 50 < sum(green, 'all') && sum(green, 'all') < 2000
+                    disp('미션 2 표식 멀리 있음');
+                    moveforward(drone, 'distance', 0.5);
+                end
+            end
+            
+        elseif mission == 3  %원 통과 후 점 찾기(purple)
+            purple = (pur_h_min<h) & (h<pur_h_max) & (pur_s_min<s) & (s<=pur_s_max);
+            imshow(purple);
+            if sum(purple, 'all') ~= 0
+                if sum(purple, 'all') > 2000
+                    disp('미션 3 표식 감지');
+                    land(drone);
+                    break;
+                    
+                elseif 50 < sum(purple, 'all') && sum(purple, 'all') < 2000
+                    disp('미션 3 표식 멀리 있음');
+                    moveforward(drone, 'distance', 0.2);
+                end     
+            end
+        end
+    end
+</pre>
+</code>
+----
+4. 인식한 표식까지 전진한 후, 회전 임무를 수행한다. (2단계에서 2-3번을 반복진행)
+<pre>
+<code>
+
 </code>
 </pre>
