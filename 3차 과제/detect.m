@@ -33,3 +33,6 @@ function [center_x, center_y] = detect(input)
     plot(center_x, center_y,'o')
     axis on
     grid on
+end
+
+[x,y] = detect("문제1.png")
