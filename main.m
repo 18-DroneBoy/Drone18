@@ -16,7 +16,7 @@ cam = camera(drone);
 %% Main 함수
 takeoff(drone);
 
-for mission = 2:3
+for mission = 1:3
     if mission == 1
         disp('미션 1 수행중');
     
