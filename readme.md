@@ -14,12 +14,15 @@ DJI Tello 미니드론을 이용하였다.
 <img src="![tello](https://user-images.githubusercontent.com/102723228/178655561-3c8f5806-bc1b-486a-b8db-ebadbc10210b.png)">
 
 
+
 * 환경구축  
 작성된 코드를 적용해보기 위한 환경이 필요했다. [주어진 맵의 규격과 고려사항](http://mini-drone.co.kr/view_notice?post_id=16566445069343700497480829)을 토대로 최대한 대회환경과 유사하게 구성하였다.
 장소는 학교 강의실을 빌렸고, 필요한 물품은 구매하여 세팅하였다.
 
 ![hong](https://user-images.githubusercontent.com/102723228/178643254-b4e66851-ecc6-4fc4-9793-32a0e628670b.jpg)
 <img src="![hong](https://user-images.githubusercontent.com/102723228/178643466-71bf2aaf-c2a5-4618-a451-1859624eac76.jpg)">
+![KakaoTalk_20220713_174139855_01](https://user-images.githubusercontent.com/102723228/178691157-db95d935-a87a-45d0-85ee-3e0597e30f8d.jpg)
+<img src="![KakaoTalk_20220713_174139855_01](https://user-images.githubusercontent.com/102723228/178691157-db95d935-a87a-45d0-85ee-3e0597e30f8d.jpg)">
 
 
 🎈 대회진행전략
@@ -81,14 +84,12 @@ DJI Tello 미니드론을 이용하였다.
 ----
 1. 기기의 객체 선언 및 takeoff
 <pre>
-clc; clear;
-
 %% 변수 선언
 count = 0;
-point = [480 360]; %카메라 각도 고려
+detection = [false false];
 
 red_h_min1 = 0; red_h_max1 = 0.05; red_h_min2 = 0.95; red_h_max2 = 1; red_s_min = 0.6; red_s_max = 1;
-pur_h_min = 0.6; pur_h_max = 0.85; pur_s_min = 0.4; pur_s_max = 1;
+pur_h_min = 0.7; pur_h_max = 0.85; pur_s_min = 0.4; pur_s_max = 1;
 gre_h_min = 0.3; gre_h_max = 0.4; gre_s_min = 0.4; gre_s_max = 1;
 blu_h_min = 0.55; blu_h_max = 0.7; blu_s_min = 0.5; blu_s_max = 0.9;
 
@@ -115,6 +116,7 @@ for mission = 1:3
  
     %% 원 통과 함수(Blue Screen Detection)
     while 1
+        disp('원 탐색 수행');
         %이미지 처리(RGB->HSV)
         frame = snapshot(cam);
         hsv = rgb2hsv(frame);
@@ -122,51 +124,68 @@ for mission = 1:3
         s = hsv(:,:,2);
         v = hsv(:,:,3);
         
-        blue_screen = (blu_h_min<h)&(h<blu_h_max)&(blu_s_min<s)&(s<blu_s_max);
-        circle = imfill(blue_screen,'holes');
+        blue_screen = (blu_h_min<h)&(h<blu_h_max)&(blu_s_min<s)&(s<blu_s_max); %파랑색 검출
+        circle = imfill(blue_screen,'holes'); %빈공간 채우기
          
         for x=1:size(blue_screen,1)
             for y=1:size(blue_screen,2)
                 if blue_screen(x,y)==circle(x,y)
-                    circle(x,y)=0;  %1:흰색, 0:검은색
+                    circle(x,y)=0;  %동일한 부분을 0으로 처리함으로써 원만 추출
                 end
             end
         end
        
-        %구멍이 식별된 경우
+        %hole 식별
         if sum(circle,'all') > 10000 
-            disp('구멍 탐색 완료!');
+            disp('hole 탐색 완료!');
+            count = 0;
             break;
 
-        %구멍이 식별되지 않을 경우
+        %hole 미식별
         else
-            %화면의 좌우를 비교
-            diff_lr = sum(imcrop(blue_screen,[0 0 480 720]),'all') - sum(imcrop(blue_screen,[480 0 480 720]),'all');
+            %화면의 좌우, 상하를 비교
+            diff_lr = sum(imcrop(blue_screen,[0 0 480 720]),'all') - sum(imcrop(blue_screen,[480 0 960 720]),'all');
             diff_ud = sum(imcrop(blue_screen,[0 0 960 360]),'all') - sum(imcrop(blue_screen,[0 360 960 720]),'all');
+            
+            if count == 4
+                moveforward(drone, 'distance', 0.2, 'speed', 0.5);
+                disp('기동 횟수 초과에 따른 직진');
+                count = 0;
+            
+            else
+                %화면에 표시된 blue_screen의 좌우값 차이를 이용
+                if diff_lr > 30000
+                    moveleft(drone,'distance',0.25,'speed',0.5);
+                    disp('왼쪽으로 0.25m 만큼 이동');
+                    count = count + 1;
 
-            %장애물에 대한 이미지의 좌우 차이값이 30000이상이면 좌우로 이동
-            if diff_lr > 30000
-                moveleft(drone,'distance',0.3,'speed',1);
-                disp('왼쪽으로 0.25m 만큼 이동');
+                elseif diff_lr < -30000
+                    moveright(drone,'distance',0.25,'speed',0.5);
+                    disp('오른쪽으로 0.25m 만큼 이동');
+                    count = count + 1;
+                end
 
-            elseif diff_lr < -30000
-                moveright(drone,'distance',0.3,'speed',1);
-                disp('오른쪽으로 0.25m 만큼 이동');
-            end
+                %화면에 표시된 blue_screen의 상하값 차이를 이용
+                if diff_ud > 12000
+                    moveup(drone,'distance',0.2,'speed',0.5);
+                    disp('위쪽으로 0.2m 만큼 이동');
+                    count = count + 1;
 
-            %장애물에 대한 이미지의 상하 차이값이 10000이상이면 상하로 이동
-            if diff_ud > 10000
-                moveup(drone,'distance',0.2,'speed',1);
-                disp('위쪽으로 0.2m 만큼 이동');
-            elseif diff_ud < -10000
-                movedown(drone,'distance',0.2,'speed',1);
-                disp('아래쪽으로 0.2m 만큼 이동');
+                elseif diff_ud < -12000
+                    movedown(drone,'distance',0.2,'speed',0.5);
+                    disp('아래쪽으로 0.2m 만큼 이동');
+                    count = count + 1;
+                end
+                
+                if mission == 3
+                    turn(drone, deg2rad(3));
+                    disp('3도 회전');
+                end 
             end
         end
     end
-   
-
-    %% 원 통과 함수(전진 구동)
+    
+    %% 원 통과 함수(Circle Detection)
     while 1
         %이미지 처리(RGB->HSV)
         frame = snapshot(cam);
@@ -175,67 +194,87 @@ for mission = 1:3
         s = hsv(:,:,2);
         v = hsv(:,:,3);
         
-        blue_screen = (blu_h_min<h)&(h<blu_h_max)&(blu_s_min<s)&(s<blu_s_max);
-        fill_screen = imfill(blue_screen,'holes');
+        blue_screen = (blu_h_min<h)&(h<blu_h_max)&(blu_s_min<s)&(s<blu_s_max); %파랑색 검출
+        fill_screen = imfill(blue_screen,'holes'); %빈공간 채우기
         circle = fill_screen;
         
         for x=1:size(blue_screen,1)
             for y=1:size(blue_screen,2)
                 if blue_screen(x,y)==circle(x,y)
-                    circle(x,y)=0;  %0:흰색, 1:검은색
+                    circle(x,y)=0;  %동일한 부분을 0으로 처리함으로써 원만 추출
                 end
             end
         end
         
-        detect_area = regionprops(circle,'Centroid','Area');
-        area = 0;
+        circle_detect_area = regionprops(circle,'Centroid','Area');
+        circle_area = 0;
 
-        for j = 1:length(detect_area)
-                if area <= detect_area(j).Area %가장 큰 영역 추출을 위하여 Area를 이용한 처리
-                    area = detect_area(j).Area;
-                    center = detect_area(j).Centroid;
+        for j = 1:length(circle_detect_area)
+                if circle_area <= circle_detect_area(j).Area %가장 큰 영역 추출을 위하여 Area를 이용한 처리
+                    circle_area = circle_detect_area(j).Area;
+                    circle_center = circle_detect_area(j).Centroid; %가장 큰 영역의 중앙 좌표값 측정
                 end
         end
-        area
-        imshow(circle);
         
-        if area >= 80000
+        if circle_area >= 80000 && mission ~= 3
+            disp('표식 탐색으로 진행');
             break;
         end
-                        
-        if area ~= 0
-            if (420 <= round(center(1)) && 540 >= round(center(1))) && (160 <= round(center(2)) && 240 >= round(center(2)))
-                disp('1');
+        
+        if mission == 3
+            purple = (pur_h_min<h) & (h<pur_h_max) & (pur_s_min<s) & (s<=pur_s_max);
+            purple_detect_area = regionprops(purple, 'Centroid', 'Area');
+            purple_area = 0;
+            for j = 1:length(purple_detect_area)
+                if purple_area <= purple_detect_area(j).Area %가장 큰 영역 추출을 위하여 Area를 이용한 처리
+                    purple_area = purple_detect_area(j).Area;
+                    purple_center = purple_detect_area(j).Centroid;
+                end
+            end
+            
+            if purple_area ~= 0
+                if purple_center(1) - circle_center(1) > 50
+                    turn(drone, deg2rad(3));
+
+                elseif purple_center(1) - circle_center(1) < - 50
+                    turn(drone, deg2rad(-3));
+
+                else
+                    break;
+                end
+            end    
+        end
+ 
+        if circle_area ~= 0
+            if (420 <= round(circle_center(1)) && 540 >= round(circle_center(1))) && (120 <= round(circle_center(2)) && 220 >= round(circle_center(2)))
                     
-                if area >= 50000
-                    disp(['미션 ',mission, '원 통과 완료']);
+                if circle_area >= 50000
+                    disp('충분한 크기의 원 탐색 완료');
                     break;
                     
                 else
                     moveforward(drone, 'Distance', 0.6, 'speed', 1);
                 end
 
-            elseif 420 > round(center(1))
-                moveleft(drone, 'Distance', 0.2, 'speed', 1);
-                disp('2');
+            elseif 420 > round(circle_center(1))
+                moveleft(drone, 'Distance', 0.2, 'speed', 0.5);
+                disp('자세 제어를 위해 좌측으로 이동');
 
-            elseif 540 < round(center(1))
-                moveright(drone, 'Distance', 0.2, 'speed', 1);
-                disp('3');
+            elseif 540 < round(circle_center(1))
+                moveright(drone, 'Distance', 0.2, 'speed', 0.5);
+                disp('자세 제어를 위해 우측으로 이동');
 
-            elseif 160 > round(center(2))
-                moveup(drone, 'Distance', 0.2, 'speed', 1);
-                disp('4');
+            elseif 120 > round(circle_center(2))
+                moveup(drone, 'Distance', 0.2, 'speed', 0.5);
+                disp('자세 제어를 위해 위로 이동');
 
-            elseif 240 < round(center(2))
-                movedown(drone, 'Distance', 0.2, 'speed', 1);
-                disp('5');
+            elseif 220 < round(circle_center(2))
+                movedown(drone, 'Distance', 0.2, 'speed', 0.5);
+                disp('자세 제어를 위해 아래로 이동');
             end
-            
-        else
-            disp(['미션 ',mission, '원2 통과 완료']);
-            break;
         end
+        
+        
     end
 </pre>
 
@@ -305,6 +344,6 @@ for mission = 1:3
             end
         end
     end
-</code>
+</pre>
 ----
 
