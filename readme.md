@@ -33,7 +33,6 @@ Drone18
 ----
 1. 기기의 객체 선언 및 takeoff
 <pre>
-<code>
 clc; clear;
 
 %% 변수 선언
@@ -51,12 +50,10 @@ cam = camera(drone);
 
 %% Main 함수
 takeoff(drone);
-</code>
 </pre>
 -------------
 2. 구멍 이미지 및 구멍 위치에 따라 일정한 시간간격으로 전진하는 드론을 상하좌우로 제어
 <pre>
-<code>
 for mission = 1:3
     if mission == 1
         disp('미션 1 수행중');
@@ -192,13 +189,11 @@ for mission = 1:3
             break;
         end
     end
-</code>
 </pre>
 
 ----
 3. 표식 이미지 처리 & 인식 및 회전임무 수행
 <pre>
-<code>
  %% 표식 찾기 함수
     while 1
         %이미지 처리(RGB->HSV)
@@ -262,7 +257,6 @@ for mission = 1:3
             end
         end
     end
-</pre>
 </code>
 ----
 
