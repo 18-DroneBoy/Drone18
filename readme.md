@@ -5,7 +5,12 @@
 
 ----
 코드설명에 들어가기 앞서 준비된 하드웨어를 살펴보자. 
-* 사용기체
+* 사용기체  
+DJI Tello 미니드론을 이용하였다.
+
+![tello](https://user-images.githubusercontent.com/102723228/178655561-3c8f5806-bc1b-486a-b8db-ebadbc10210b.png)
+<img src="![tello](https://user-images.githubusercontent.com/102723228/178655561-3c8f5806-bc1b-486a-b8db-ebadbc10210b.png)">
+
 
 + 
 
