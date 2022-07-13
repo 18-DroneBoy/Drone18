@@ -42,7 +42,25 @@ DJI Tello 미니드론을 이용하였다.
 1. 기기의 객체 선언 및 takeoff 진행한다.
 2. 파란색 천막 인식 및 구멍을 이미지 처리한 후 드론 카메라에 표시되는 구멍의 위치에 따라 드론이 전진과 동시에 상하좌우로 제어한다.
 3. 구멍에 충분히 가까워졌다고 판단되면 구멍을 이용한 제어는 멈추고 이후의 표식을 인식한다. 
-4. 인식한 표식까지 전진한 후, 회전 임무를 수행한다. (2단계에서 2-3번을 반복진행)
+4. 인식한 표식까지 전진한 후, 회전 임무를 수행한다. (2단계에서 2-3번을 반복진행)  
+
+* 전체적인 알고리즘 진행과정  
+![image](https://user-images.githubusercontent.com/102723228/178747877-fcfcfaeb-a0a3-43b5-b3a0-c08d92a91fa4.png)
+<img src="![image](https://user-images.githubusercontent.com/102723228/178747917-946ea54e-9268-43e1-8956-d269f9ecd91a.png)">
+
+5. 3단계에서 장애물 앞으로 이동한 후 표식을 정면으로 인식하기 위해 Yaw 기동을 진행한다.  
+* Yaw 기동을 하지 않을 시  
+
+![image](https://user-images.githubusercontent.com/102723228/178748806-26703589-4542-49f2-a58e-3de0df25e08d.png)
+<img src="![image](https://user-images.githubusercontent.com/102723228/178748806-26703589-4542-49f2-a58e-3de0df25e08d.png)">  
+
+드론이 정면에 있지 않아, 표식을 정확히 인식할 수 없다.
+
+* Yaw 기동 진행 시  
+
+![image](https://user-images.githubusercontent.com/102723228/178749527-418580cb-87ab-4367-ac2f-3b6c52f00282.png)
+<img src="![image](https://user-images.githubusercontent.com/102723228/178749555-b5d74f89-2b4b-49e1-808f-16ffccc5cdf2.png)">  
+
 
 
 🎈 단계별 시행착오
