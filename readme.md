@@ -10,7 +10,8 @@
 + 
 
 + 환경구축  
-작성된 코드를 적용해보기 위한 환경이 필요했다. 장소는 학교 강의실을 빌려 필요한 물품은 구매하여 세팅하였다.
+작성된 코드를 적용해보기 위한 환경이 필요했다. [주어진 맵의 규격과 고려사항](http://mini-drone.co.kr/view_notice?post_id=16566445069343700497480829)을 토대로 최대한 대회환경과 유사하게 구성하였다.
+장소는 학교 강의실을 빌렸고, 필요한 물품은 구매하여 세팅하였다.
 
 ![hong](https://user-images.githubusercontent.com/102723228/178643254-b4e66851-ecc6-4fc4-9793-32a0e628670b.jpg)
 <img src="![hong](https://user-images.githubusercontent.com/102723228/178643466-71bf2aaf-c2a5-4618-a451-1859624eac76.jpg)">
