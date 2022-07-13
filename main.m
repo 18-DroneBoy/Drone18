@@ -1,7 +1,6 @@
 clc; clear;
 detection = false;
 %% 변수 선언
-
 count = 0;
 
 %HSV 값 설정
@@ -306,6 +305,7 @@ for mission = 2:3
             end
         end
     end
+end
 
             
        
