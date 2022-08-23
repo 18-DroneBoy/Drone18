@@ -36,6 +36,11 @@ DJI Tello 미니드론을 이용하였다.
 
 ----
 * 대회결과 : 1단계 통과 (2단계 통과할 때 구멍 통과 바로직전에 드론이 위로 튀면서 충돌)  
+
+![hong](https://user-images.githubusercontent.com/102723228/186099724-9e93c1ea-3432-40d5-86ca-5057d9a59ddb.png)
+<img src="![hong](https://user-images.githubusercontent.com/102723228/186099724-9e93c1ea-3432-40d5-86ca-5057d9a59ddb.png)">
+
+
 다음전략 : 블루스크린 상단을 이용해서 좌우를 맞춘다음, 위에서부터 적은 distance 값으로 내려오면서 마크 탐색후 통과)  
 결론 : 내년에 보자  
 
